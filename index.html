@@ -1,3 +1,4 @@
+// HTML for maze and timer
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,46 +6,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Maze Game</title>
   <style>
-    #mazeCanvas {
-      border: 1px solid #000;
+    canvas {
+      border: 1px solid black;
       display: block;
-      margin: 20px auto;
-    }
-    #controls {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin: 10px 0;
-    }
-    .control-button {
-      padding: 10px 15px;
-      background-color: #f7931a;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-    .control-button:hover {
-      background-color: #e67e00;
+      margin: 0 auto;
     }
     #timer {
       text-align: center;
       margin-top: 10px;
       font-size: 18px;
-      color: #333;
+    }
+    button {
+      border: 1px solid #333;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #ddd;
     }
   </style>
 </head>
 <body>
   <canvas id="mazeCanvas" width="600" height="600"></canvas>
-  <div id="controls">
-    <button class="control-button" id="up">Up</button>
-    <button class="control-button" id="left">Left</button>
-    <button class="control-button" id="down">Down</button>
-    <button class="control-button" id="right">Right</button>
-  </div>
-  <div id="timer">Price updates every 60 seconds: 0</div>
+  <div id="timer">Maze updates every 60 seconds: 0</div>
+
   <script>
     const mazeCanvas = document.getElementById("mazeCanvas");
     const ctx = mazeCanvas.getContext("2d");
@@ -113,7 +99,7 @@
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         elapsedTime++;
-        document.getElementById("timer").innerText = `Price updates every 60 seconds: ${elapsedTime}`;
+        document.getElementById("timer").innerText = `Maze updates every 60 seconds: ${elapsedTime}`;
 
         if (elapsedTime >= 60) {
           resetGame();
@@ -126,15 +112,15 @@
       initializeMaze();
     }
 
-    function movePlayer(direction) {
+    document.addEventListener("keydown", (e) => {
       if (mazeSolved) return;
       const moves = {
-        up: { x: 0, y: -1 },
-        down: { x: 0, y: 1 },
-        left: { x: -1, y: 0 },
-        right: { x: 1, y: 0 },
+        ArrowUp: { x: 0, y: -1 },
+        ArrowDown: { x: 0, y: 1 },
+        ArrowLeft: { x: -1, y: 0 },
+        ArrowRight: { x: 1, y: 0 },
       };
-      const move = moves[direction];
+      const move = moves[e.key];
       if (move) {
         const newX = player.x + move.x;
         const newY = player.y + move.y;
@@ -150,16 +136,72 @@
           drawMaze();
           if (player.x === end.x && player.y === end.y) {
             mazeSolved = true;
-            alert("Maze Solved!");
+            alert("Congratulations! You solved the maze.");
           }
         }
       }
-    }
+    });
 
-    document.getElementById("up").addEventListener("click", () => movePlayer("up"));
-    document.getElementById("down").addEventListener("click", () => movePlayer("down"));
-    document.getElementById("left").addEventListener("click", () => movePlayer("left"));
-    document.getElementById("right").addEventListener("click", () => movePlayer("right"));
+    // HTML structure for on-screen buttons
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.position = "fixed";
+    buttonContainer.style.bottom = "20px";
+    buttonContainer.style.left = "50%";
+    buttonContainer.style.transform = "translateX(-50%)";
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.flexDirection = "column";
+    buttonContainer.style.alignItems = "center";
+
+    document.body.appendChild(buttonContainer);
+
+    const upButton = document.createElement("button");
+    upButton.innerText = "↑";
+    upButton.style.width = "50px";
+    upButton.style.height = "50px";
+    upButton.style.margin = "5px";
+    upButton.style.fontSize = "20px";
+
+    const middleRow = document.createElement("div");
+    middleRow.style.display = "flex";
+
+    const leftButton = document.createElement("button");
+    leftButton.innerText = "←";
+    leftButton.style.width = "50px";
+    leftButton.style.height = "50px";
+    leftButton.style.margin = "5px";
+    leftButton.style.fontSize = "20px";
+
+    const downButton = document.createElement("button");
+    downButton.innerText = "↓";
+    downButton.style.width = "50px";
+    downButton.style.height = "50px";
+    downButton.style.margin = "5px";
+    downButton.style.fontSize = "20px";
+
+    const rightButton = document.createElement("button");
+    rightButton.innerText = "→";
+    rightButton.style.width = "50px";
+    rightButton.style.height = "50px";
+    rightButton.style.margin = "5px";
+    rightButton.style.fontSize = "20px";
+
+    buttonContainer.appendChild(upButton);
+    buttonContainer.appendChild(middleRow);
+    middleRow.appendChild(leftButton);
+    middleRow.appendChild(downButton);
+    middleRow.appendChild(rightButton);
+
+    // Event listeners for on-screen buttons
+    upButton.addEventListener("click", () => simulateKeyPress("ArrowUp"));
+    leftButton.addEventListener("click", () => simulateKeyPress("ArrowLeft"));
+    downButton.addEventListener("click", () => simulateKeyPress("ArrowDown"));
+    rightButton.addEventListener("click", () => simulateKeyPress("ArrowRight"));
+
+    // Function to simulate key press events
+    function simulateKeyPress(key) {
+      const event = new KeyboardEvent("keydown", { key });
+      document.dispatchEvent(event);
+    }
 
     initializeMaze();
   </script>
