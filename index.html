@@ -1,10 +1,9 @@
-// HTML for maze and timer
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze Game</title>
+  <title>Maze CAPTCHA</title>
   <style>
     canvas {
       border: 1px solid black;
@@ -39,6 +38,7 @@
     let maze, player, end;
     let elapsedTime = 0;
     let timerInterval;
+    let mazeInterval;
     let mazeSolved = false;
 
     function generateMaze(size) {
@@ -92,6 +92,7 @@
       mazeSolved = false;
       drawMaze();
       startTimer();
+      startMazeInterval();
     }
 
     function startTimer() {
@@ -101,6 +102,21 @@
         elapsedTime++;
         document.getElementById("timer").innerText = `Solve the maze to proceed: ${elapsedTime} seconds elapsed`;
       }, 1000);
+    }
+
+    function startMazeInterval() {
+      clearInterval(mazeInterval);
+      mazeInterval = setInterval(() => {
+        if (!mazeSolved) {
+          initializeMaze();
+        }
+      }, 30000);
+    }
+
+    function grantAccess() {
+      clearInterval(timerInterval);
+      clearInterval(mazeInterval);
+      document.getElementById("timer").innerText = "Access Granted! You solved the maze.";
     }
 
     document.addEventListener("keydown", (e) => {
@@ -127,8 +143,7 @@
           drawMaze();
           if (player.x === end.x && player.y === end.y) {
             mazeSolved = true;
-            alert("Access Granted. You solved the maze.");
-            clearInterval(timerInterval);
+            grantAccess();
           }
         }
       }
