@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maze Game</title>
+  <style>
+    #mazeCanvas {
+      border: 1px solid #000;
+      display: block;
+      margin: 20px auto;
+    }
+    #controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 10px 0;
+    }
+    .control-button {
+      padding: 10px 15px;
+      background-color: #f7931a;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+    .control-button:hover {
+      background-color: #e67e00;
+    }
+    #timer {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 18px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mazeCanvas" width="600" height="600"></canvas>
+  <div id="controls">
+    <button class="control-button" id="up">Up</button>
+    <button class="control-button" id="left">Left</button>
+    <button class="control-button" id="down">Down</button>
+    <button class="control-button" id="right">Right</button>
+  </div>
+  <div id="timer">Price updates every 60 seconds: 0</div>
+  <script>
+    const mazeCanvas = document.getElementById("mazeCanvas");
+    const ctx = mazeCanvas.getContext("2d");
+    const mazeSize = 15;
+    const cellSize = mazeCanvas.width / mazeSize;
+    let maze, player, end;
+    let elapsedTime = 0;
+    let timerInterval;
+    let mazeSolved = false;
+
+    function generateMaze(size) {
+      const maze = Array(size).fill(null).map(() => Array(size).fill(1));
+      const stack = [];
+      let x = 0,
+        y = 0;
+      maze[y][x] = 0;
+      stack.push([x, y]);
+
+      while (stack.length > 0) {
+        const [cx, cy] = stack[stack.length - 1];
+        const directions = [];
+        if (cx > 1 && maze[cy][cx - 2] === 1) directions.push([-2, 0]);
+        if (cx < size - 2 && maze[cy][cx + 2] === 1) directions.push([2, 0]);
+        if (cy > 1 && maze[cy - 2][cx] === 1) directions.push([0, -2]);
+        if (cy < size - 2 && maze[cy + 2][cx] === 1) directions.push([0, 2]);
+
+        if (directions.length > 0) {
+          const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
+          maze[cy + dy / 2][cx + dx / 2] = 0;
+          maze[cy + dy][cx + dx] = 0;
+          stack.push([cx + dx, cy + dy]);
+        } else {
+          stack.pop();
+        }
+      }
+      return maze;
+    }
+
+    function drawMaze() {
+      ctx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
+      for (let i = 0; i < mazeSize; i++) {
+        for (let j = 0; j < mazeSize; j++) {
+          if (maze[i][j] === 1) {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
+          }
+        }
+      }
+      ctx.fillStyle = "#f7931a";
+      ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
+      ctx.fillStyle = "#33cc33";
+      ctx.fillRect(end.x * cellSize, end.y * cellSize, cellSize, cellSize);
+    }
+
+    function initializeMaze() {
+      maze = generateMaze(mazeSize);
+      player = { x: 0, y: 0 };
+      end = { x: mazeSize - 1, y: mazeSize - 1 };
+      mazeSolved = false;
+      drawMaze();
+      startTimer();
+    }
+
+    function startTimer() {
+      elapsedTime = 0;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        elapsedTime++;
+        document.getElementById("timer").innerText = `Price updates every 60 seconds: ${elapsedTime}`;
+
+        if (elapsedTime >= 60) {
+          resetGame();
+        }
+      }, 1000);
+    }
+
+    function resetGame() {
+      clearInterval(timerInterval);
+      initializeMaze();
+    }
+
+    function movePlayer(direction) {
+      if (mazeSolved) return;
+      const moves = {
+        up: { x: 0, y: -1 },
+        down: { x: 0, y: 1 },
+        left: { x: -1, y: 0 },
+        right: { x: 1, y: 0 },
+      };
+      const move = moves[direction];
+      if (move) {
+        const newX = player.x + move.x;
+        const newY = player.y + move.y;
+        if (
+          newX >= 0 &&
+          newX < mazeSize &&
+          newY >= 0 &&
+          newY < mazeSize &&
+          maze[newY][newX] === 0
+        ) {
+          player.x = newX;
+          player.y = newY;
+          drawMaze();
+          if (player.x === end.x && player.y === end.y) {
+            mazeSolved = true;
+            alert("Maze Solved!");
+          }
+        }
+      }
+    }
+
+    document.getElementById("up").addEventListener("click", () => movePlayer("up"));
+    document.getElementById("down").addEventListener("click", () => movePlayer("down"));
+    document.getElementById("left").addEventListener("click", () => movePlayer("left"));
+    document.getElementById("right").addEventListener("click", () => movePlayer("right"));
+
+    initializeMaze();
+  </script>
+</body>
+</html>
