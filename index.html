@@ -1,216 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maze CAPTCHA</title>
-  <style>
-    canvas {
-      border: 1px solid black;
-      display: block;
-      margin: 0 auto;
-    }
-    #timer {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    button {
-      border: 1px solid #333;
-      border-radius: 5px;
-      background-color: #f0f0f0;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #ddd;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptographic Input Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        #outputBox {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+            user-select: none;
+            filter: blur(6px);
+        }
+        #outputBox.copied {
+            color: green;
+        }
+        button {
+            display: block;
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #usernameBox {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .hidden {
+            filter: blur(6px);
+        }
+        .login-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-button:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
-  <canvas id="mazeCanvas" width="300" height="300"></canvas>
-  <div id="timer">Solve the maze to proceed: 0 seconds elapsed</div>
+    <div class="container">
+        <label for="inputBox">Enter Your Value:</label>
+        <input type="text" id="inputBox" placeholder="Minimum 8 characters">
 
-  <script>
-    const mazeCanvas = document.getElementById("mazeCanvas");
-    const ctx = mazeCanvas.getContext("2d");
-    const mazeSize = 15;
-    const cellSize = mazeCanvas.width / mazeSize;
-    let maze, player, end;
-    let elapsedTime = 0;
-    let timerInterval;
-    let mazeInterval;
-    let mazeSolved = false;
+        <div id="outputBox">Blurred output will appear here</div>
 
-    function generateMaze(size) {
-      const maze = Array(size).fill(null).map(() => Array(size).fill(1));
-      const stack = [];
-      let x = 0,
-        y = 0;
-      maze[y][x] = 0;
-      stack.push([x, y]);
+        <button id="inputButton">Input</button>
 
-      while (stack.length > 0) {
-        const [cx, cy] = stack[stack.length - 1];
-        const directions = [];
-        if (cx > 1 && maze[cy][cx - 2] === 1) directions.push([-2, 0]);
-        if (cx < size - 2 && maze[cy][cx + 2] === 1) directions.push([2, 0]);
-        if (cy > 1 && maze[cy - 2][cx] === 1) directions.push([0, -2]);
-        if (cy < size - 2 && maze[cy + 2][cx] === 1) directions.push([0, 2]);
+        <div id="usernameBox" class="hidden">Username will appear here</div>
 
-        if (directions.length > 0) {
-          const [dx, dy] = directions[Math.floor(Math.random() * directions.length)];
-          maze[cy + dy / 2][cx + dx / 2] = 0;
-          maze[cy + dy][cx + dx] = 0;
-          stack.push([cx + dx, cy + dy]);
-        } else {
-          stack.pop();
+        <button id="loginButton" class="login-button">Login</button>
+    </div>
+
+    <script>
+        const inputBox = document.getElementById('inputBox');
+        const outputBox = document.getElementById('outputBox');
+        const inputButton = document.getElementById('inputButton');
+        const usernameBox = document.getElementById('usernameBox');
+        const loginButton = document.getElementById('loginButton');
+
+        // Function to generate SHA-256 hash
+        async function generateHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
         }
-      }
-      return maze;
-    }
 
-    function drawMaze() {
-      ctx.clearRect(0, 0, mazeCanvas.width, mazeCanvas.height);
-      for (let i = 0; i < mazeSize; i++) {
-        for (let j = 0; j < mazeSize; j++) {
-          if (maze[i][j] === 1) {
-            ctx.fillStyle = "#000";
-            ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize);
-          }
-        }
-      }
-      ctx.fillStyle = "#f7931a";
-      ctx.fillRect(player.x * cellSize, player.y * cellSize, cellSize, cellSize);
-      ctx.fillStyle = "#33cc33";
-      ctx.fillRect(end.x * cellSize, end.y * cellSize, cellSize, cellSize);
-    }
+        inputButton.addEventListener('click', async () => {
+            const inputValue = inputBox.value;
 
-    function initializeMaze() {
-      maze = generateMaze(mazeSize);
-      player = { x: 0, y: 0 };
-      end = { x: mazeSize - 1, y: mazeSize - 1 };
-      mazeSolved = false;
-      drawMaze();
-      startTimer();
-      startMazeInterval();
-    }
+            if (inputValue.length < 8) {
+                alert('Input must be at least 8 characters long.');
+                return;
+            }
 
-    function startTimer() {
-      elapsedTime = 0;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        elapsedTime++;
-        document.getElementById("timer").innerText = `Solve the maze to proceed: ${elapsedTime} seconds elapsed`;
-      }, 1000);
-    }
+            // Generate 64-character hash
+            const hash = await generateHash(inputValue);
 
-    function startMazeInterval() {
-      clearInterval(mazeInterval);
-      mazeInterval = setInterval(() => {
-        if (!mazeSolved) {
-          initializeMaze();
-        }
-      }, 45000);
-    }
+            // Display blurred hash in Output Box
+            outputBox.textContent = hash;
+            outputBox.style.filter = 'blur(6px)';
 
-    function grantAccess() {
-      clearInterval(timerInterval);
-      clearInterval(mazeInterval);
-      document.getElementById("timer").innerText = "Access Granted! You solved the maze.";
-    }
+            // Display masked hash in Username Box
+            usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
+            usernameBox.classList.remove('hidden');
 
-    document.addEventListener("keydown", (e) => {
-      if (mazeSolved) return;
-      const moves = {
-        ArrowUp: { x: 0, y: -1 },
-        ArrowDown: { x: 0, y: 1 },
-        ArrowLeft: { x: -1, y: 0 },
-        ArrowRight: { x: 1, y: 0 },
-      };
-      const move = moves[e.key];
-      if (move) {
-        const newX = player.x + move.x;
-        const newY = player.y + move.y;
-        if (
-          newX >= 0 &&
-          newX < mazeSize &&
-          newY >= 0 &&
-          newY < mazeSize &&
-          maze[newY][newX] === 0
-        ) {
-          player.x = newX;
-          player.y = newY;
-          drawMaze();
-          if (player.x === end.x && player.y === end.y) {
-            mazeSolved = true;
-            grantAccess();
-          }
-        }
-      }
-    });
-
-    // HTML structure for on-screen buttons
-    const buttonContainer = document.createElement("div");
-    buttonContainer.style.position = "fixed";
-    buttonContainer.style.bottom = "20px";
-    buttonContainer.style.left = "50%";
-    buttonContainer.style.transform = "translateX(-50%)";
-    buttonContainer.style.display = "flex";
-    buttonContainer.style.flexDirection = "column";
-    buttonContainer.style.alignItems = "center";
-
-    document.body.appendChild(buttonContainer);
-
-    const upButton = document.createElement("button");
-    upButton.innerText = "↑";
-    upButton.style.width = "50px";
-    upButton.style.height = "50px";
-    upButton.style.margin = "5px";
-    upButton.style.fontSize = "20px";
-
-    const middleRow = document.createElement("div");
-    middleRow.style.display = "flex";
-
-    const leftButton = document.createElement("button");
-    leftButton.innerText = "←";
-    leftButton.style.width = "50px";
-    leftButton.style.height = "50px";
-    leftButton.style.margin = "5px";
-    leftButton.style.fontSize = "20px";
-
-    const downButton = document.createElement("button");
-    downButton.innerText = "↓";
-    downButton.style.width = "50px";
-    downButton.style.height = "50px";
-    downButton.style.margin = "5px";
-    downButton.style.fontSize = "20px";
-
-    const rightButton = document.createElement("button");
-    rightButton.innerText = "→";
-    rightButton.style.width = "50px";
-    rightButton.style.height = "50px";
-    rightButton.style.margin = "5px";
-    rightButton.style.fontSize = "20px";
-
-    buttonContainer.appendChild(upButton);
-    buttonContainer.appendChild(middleRow);
-    middleRow.appendChild(leftButton);
-    middleRow.appendChild(downButton);
-    middleRow.appendChild(rightButton);
-
-    // Event listeners for on-screen buttons
-    upButton.addEventListener("click", () => simulateKeyPress("ArrowUp"));
-    leftButton.addEventListener("click", () => simulateKeyPress("ArrowLeft"));
-    downButton.addEventListener("click", () => simulateKeyPress("ArrowDown"));
-    rightButton.addEventListener("click", () => simulateKeyPress("ArrowRight"));
-
-    // Function to simulate key press events
-    function simulateKeyPress(key) {
-      const event = new KeyboardEvent("keydown", { key });
-      document.dispatchEvent(event);
-    }
-
-    initializeMaze();
-  </script>
+            // Show the login button
+            loginButton.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
