@@ -14,7 +14,7 @@
     #timer {
       text-align: center;
       margin-top: 10px;
-      font-size: 18px;
+      font-size: 14px;
     }
     button {
       border: 1px solid #333;
@@ -28,8 +28,8 @@
   </style>
 </head>
 <body>
-  <canvas id="mazeCanvas" width="600" height="600"></canvas>
-  <div id="timer">Maze updates every 60 seconds: 0</div>
+  <canvas id="mazeCanvas" width="300" height="300"></canvas>
+  <div id="timer">Solve the maze to proceed: 0 seconds elapsed</div>
 
   <script>
     const mazeCanvas = document.getElementById("mazeCanvas");
@@ -99,17 +99,8 @@
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
         elapsedTime++;
-        document.getElementById("timer").innerText = `Maze updates every 60 seconds: ${elapsedTime}`;
-
-        if (elapsedTime >= 60) {
-          resetGame();
-        }
+        document.getElementById("timer").innerText = `Solve the maze to proceed: ${elapsedTime} seconds elapsed`;
       }, 1000);
-    }
-
-    function resetGame() {
-      clearInterval(timerInterval);
-      initializeMaze();
     }
 
     document.addEventListener("keydown", (e) => {
@@ -136,7 +127,8 @@
           drawMaze();
           if (player.x === end.x && player.y === end.y) {
             mazeSolved = true;
-            alert("Congratulations! You solved the maze.");
+            alert("Access Granted. You solved the maze.");
+            clearInterval(timerInterval);
           }
         }
       }
