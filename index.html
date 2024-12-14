@@ -3,40 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Key Verification Page</title>
+    <title>Dialog Boxes</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f0f0f0;
             display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            height: 100vh;
             flex-wrap: wrap;
-            justify-content: space-around;
         }
 
         .dialog-box {
+            position: absolute;
+            width: 300px;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            margin: 10px;
         }
 
-        .dialog-box h2 {
-            margin: 0 0 20px;
-            font-size: 18px;
-            text-align: center;
-        }
-
-        label {
+        .dialog-box label {
             font-weight: bold;
             margin-bottom: 10px;
             display: block;
         }
 
-        input {
+        .dialog-box input {
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
@@ -44,11 +40,39 @@
             border-radius: 4px;
         }
 
-        .output {
+        .dialog-box button {
+            display: block;
             width: 100%;
             padding: 10px;
-            border: 1px solid #ccc;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            font-size: 16px;
             border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .dialog-box button:hover {
+            background-color: #0056b3;
+        }
+
+        .dialog-box#keyDialog {
+            top: 20px;
+            left: 20px;
+        }
+
+        .dialog-box#verificationDialog {
+            top: 20px;
+            right: 20px;
+        }
+
+        .dialog-box#usernameDialog {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #outputBox1 {
             background-color: #f9f9f9;
             text-align: center;
             font-size: 14px;
@@ -57,69 +81,52 @@
             filter: blur(6px);
         }
 
-        button {
-            display: block;
-            padding: 10px 20px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #usernameOutput {
-            text-align: center;
-            font-size: 16px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        #usernameBox {
             margin-top: 20px;
-            background-color: #f9f9f9;
-            filter: blur(6px);
+            text-align: center;
         }
 
         .hidden {
+            filter: blur(6px);
+        }
+
+        .login-button {
             display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <!-- Dialog Box 1: Enter Key -->
-    <div class="dialog-box" style="position: absolute; top: 20px; left: 20px;">
-        <h2>Enter Your Key</h2>
-        <label for="inputBox">Input Key:</label>
-        <input type="text" id="inputBox" placeholder="Minimum 8 characters">
+
+    <!-- Key Dialog -->
+    <div class="dialog-box" id="keyDialog">
+        <label for="inputBox1">Enter Your Key:</label>
+        <input type="text" id="inputBox1" placeholder="Minimum 8 characters">
         <button id="generateButton">Generate</button>
-        <div id="outputBox" class="output">Blurred output will appear here</div>
+        <div id="outputBox1">Blurred output will appear here</div>
     </div>
 
-    <!-- Dialog Box 2: Verification -->
-    <div class="dialog-box" style="position: absolute; top: 20px; right: 20px;">
-        <h2>Verification</h2>
-        <div id="verificationOutput" class="output">Blurred output will appear here</div>
+    <!-- Verification Dialog -->
+    <div class="dialog-box" id="verificationDialog">
+        <label for="outputBox1">Verification:</label>
         <button id="verifyButton">Verify</button>
     </div>
 
-    <!-- Dialog Box 3: Username -->
-    <div class="dialog-box" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);">
-        <h2>Username</h2>
-        <div id="usernameOutput">Username will appear here</div>
-        <button id="loginButton" class="hidden">Login</button>
+    <!-- Username Dialog -->
+    <div class="dialog-box" id="usernameDialog">
+        <div id="usernameBox" class="hidden">Username will appear here</div>
+        <button id="loginButton" class="login-button">Login</button>
     </div>
 
     <script>
-        const inputBox = document.getElementById('inputBox');
+        const inputBox1 = document.getElementById('inputBox1');
+        const outputBox1 = document.getElementById('outputBox1');
         const generateButton = document.getElementById('generateButton');
-        const outputBox = document.getElementById('outputBox');
-        const verificationOutput = document.getElementById('verificationOutput');
         const verifyButton = document.getElementById('verifyButton');
-        const usernameOutput = document.getElementById('usernameOutput');
+        const usernameBox = document.getElementById('usernameBox');
         const loginButton = document.getElementById('loginButton');
 
         // Function to generate SHA-256 hash
@@ -132,35 +139,27 @@
         }
 
         generateButton.addEventListener('click', async () => {
-            const inputValue = inputBox.value;
+            const inputValue = inputBox1.value;
 
-            // Validate input
-            if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}/.test(inputValue)) {
-                alert('Key must include small & capital letters, numbers, special characters, and be at least 8 characters long.');
+            if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
+                alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
                 return;
             }
 
-            // Generate hash
             const hash = await generateHash(inputValue);
-
-            // Display hash in the Output Box
-            outputBox.textContent = hash;
-            outputBox.style.filter = 'blur(6px)';
-
-            // Update the Verification Box
-            verificationOutput.textContent = hash;
-            verificationOutput.style.filter = 'blur(6px)';
+            outputBox1.textContent = hash;
+            outputBox1.style.filter = 'blur(6px)';
         });
 
         verifyButton.addEventListener('click', () => {
-            const hash = verificationOutput.textContent;
-
-            // Display only the first 6 characters in the Username Box
-            usernameOutput.textContent = hash.slice(0, 6) + '*'.repeat(58);
-            usernameOutput.style.filter = 'none';
-
-            // Show the Login Button
-            loginButton.classList.remove('hidden');
+            const hash = outputBox1.textContent;
+            if (hash && hash.length === 64) {
+                usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
+                usernameBox.classList.remove('hidden');
+                loginButton.style.display = 'block';
+            } else {
+                alert('Please generate a valid hash first.');
+            }
         });
     </script>
 </body>
