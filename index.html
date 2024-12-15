@@ -68,17 +68,7 @@
 
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 1</div>
-    <table id="spreadsheet1">
-        <script>
-            for (let i = 0; i < 5; i++) {
-                document.write('<tr>');
-                for (let j = 0; j < 2; j++) {
-                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
-                }
-                document.write('</tr>');
-            }
-        </script>
-    </table>
+    <table id="spreadsheet1"></table>
     <div class="options">
         <button onclick="addCell('spreadsheet1')">Add</button>
         <button onclick="deleteCell('spreadsheet1')">Delete</button>
@@ -88,17 +78,7 @@
 
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 2</div>
-    <table id="spreadsheet2">
-        <script>
-            for (let i = 0; i < 5; i++) {
-                document.write('<tr>');
-                for (let j = 0; j < 2; j++) {
-                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
-                }
-                document.write('</tr>');
-            }
-        </script>
-    </table>
+    <table id="spreadsheet2"></table>
     <div class="options">
         <button onclick="addCell('spreadsheet2')">Add</button>
         <button onclick="deleteCell('spreadsheet2')">Delete</button>
@@ -108,17 +88,7 @@
 
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 3</div>
-    <table id="spreadsheet3">
-        <script>
-            for (let i = 0; i < 5; i++) {
-                document.write('<tr>');
-                for (let j = 0; j < 2; j++) {
-                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
-                }
-                document.write('</tr>');
-            }
-        </script>
-    </table>
+    <table id="spreadsheet3"></table>
     <div class="options">
         <button onclick="addCell('spreadsheet3')">Add</button>
         <button onclick="deleteCell('spreadsheet3')">Delete</button>
@@ -128,17 +98,7 @@
 
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 4</div>
-    <table id="spreadsheet4">
-        <script>
-            for (let i = 0; i < 5; i++) {
-                document.write('<tr>');
-                for (let j = 0; j < 2; j++) {
-                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
-                }
-                document.write('</tr>');
-            }
-        </script>
-    </table>
+    <table id="spreadsheet4"></table>
     <div class="options">
         <button onclick="addCell('spreadsheet4')">Add</button>
         <button onclick="deleteCell('spreadsheet4')">Delete</button>
@@ -147,6 +107,19 @@
 </div>
 
 <script>
+    function initializeTable(tableId) {
+        const table = document.getElementById(tableId);
+        for (let i = 0; i < 5; i++) {
+            const row = document.createElement('tr');
+            for (let j = 0; j < 2; j++) {
+                const cell = document.createElement('td');
+                cell.innerHTML = '<input type="text" maxlength="64" placeholder="Cell">';
+                row.appendChild(cell);
+            }
+            table.appendChild(row);
+        }
+    }
+
     function addCell(tableId) {
         const table = document.getElementById(tableId);
         const row = document.createElement('tr');
@@ -175,6 +148,11 @@
         console.log(`${tableId} Data:`, data);
         alert(`${tableId} saved! Check console for data.`);
     }
+
+    initializeTable('spreadsheet1');
+    initializeTable('spreadsheet2');
+    initializeTable('spreadsheet3');
+    initializeTable('spreadsheet4');
 </script>
 
 </body>
