@@ -33,7 +33,7 @@
         }
 
         .dialog-box input {
-            width: 90%; /* Reduced width for neatness */
+            width: 90%;
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -85,14 +85,14 @@
         .or-text {
             position: absolute;
             top: 180px;
-            left: 50px; /* Position adjusted to align with left side */
+            left: 50px;
             font-size: 20px;
             font-weight: bold;
             color: #555;
         }
 
         #outputBox1, #outputBox2 {
-            width: 90%; /* Ensure output fits neatly within the box */
+            width: 90%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -122,11 +122,6 @@
             background-color: #28a745;
             color: white;
         }
-
-        . {
-            pointer-events: none;
-            opacity: 0.5;
-        }
     </style>
 </head>
 <body>
@@ -151,15 +146,15 @@
     <!-- Second Key Dialog -->
     <div class="dialog-box" id="secondKeyDialog">
         <label for="inputBox2">Enter Your Key:</label>
-        <input type="text" id="inputBox2" placeholder="Minimum 8 characters" >
-        <button id="generateButton2" >Generate</button>
+        <input type="text" id="inputBox2" placeholder="Minimum 8 characters">
+        <button id="generateButton2">Generate</button>
     </div>
 
     <!-- Second Verification Dialog -->
     <div class="dialog-box" id="secondVerificationDialog">
         <label for="outputBox2">Verification:</label>
         <div id="outputBox2">Blurred output will appear here</div>
-        <button id="verifyButton2" >Verify</button>
+        <button id="verifyButton2">Verify</button>
     </div>
 
     <!-- Username Dialog -->
@@ -183,36 +178,46 @@
         const usernameBox = document.getElementById('usernameBox');
         const loginButton = document.getElementById('loginButton');
 
-        // Disable the second set by default
-        function disableSecondSet() {
-            inputBox2. = ;
-            generateButton2. = ;
-            verifyButton2. = ;
+        function disableSecondSet(disabled) {
+            inputBox2.disabled = disabled;
+            generateButton2.disabled = disabled;
+            verifyButton2.disabled = disabled;
         }
 
-        // Disable the first set when second set is active
-        function disableFirstSet() {
-            inputBox1. = ;
-            generateButton. = ;
-            verifyButton. = ;
+        function disableFirstSet(disabled) {
+            inputBox1.disabled = disabled;
+            generateButton.disabled = disabled;
+            verifyButton.disabled = disabled;
         }
 
         inputBox1.addEventListener('input', () => {
-    disableSecondSet(true);
-});
+            disableSecondSet(true);
+        });
 
         inputBox2.addEventListener('input', () => {
-    disableFirstSet(true);
-});
+            disableFirstSet(true);
+        });
+
+        async function generateHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function generateStrongerHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
 
         generateButton.addEventListener('click', async () => {
             const inputValue = inputBox1.value;
-
             if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
                 alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
                 return;
             }
-
             const hash = await generateHash(inputValue);
             outputBox1.textContent = hash;
             outputBox1.style.filter = 'blur(6px)';
@@ -231,12 +236,10 @@
 
         generateButton2.addEventListener('click', async () => {
             const inputValue = inputBox2.value;
-
             if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
                 alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
                 return;
             }
-
             const hash = await generateStrongerHash(inputValue);
             outputBox2.textContent = hash;
             outputBox2.style.filter = 'blur(6px)';
@@ -244,7 +247,7 @@
 
         verifyButton2.addEventListener('click', () => {
             const hash = outputBox2.textContent;
-            if (hash && hash.length === 128) { // SHA-512 produces a 128-character hash
+            if (hash && hash.length === 128) {
                 usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
                 usernameBox.classList.remove('hidden');
                 loginButton.style.display = 'block';
