@@ -82,6 +82,16 @@
             transform: translateX(-50%);
         }
 
+        .or-text {
+            position: absolute;
+            top: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+
         #outputBox1, #outputBox2 {
             width: 90%; /* Ensure output fits neatly within the box */
             padding: 10px;
@@ -131,6 +141,9 @@
         <button id="verifyButton">Verify</button>
     </div>
 
+    <!-- OR Text -->
+    <div class="or-text">OR</div>
+
     <!-- Second Key Dialog -->
     <div class="dialog-box" id="secondKeyDialog">
         <label for="inputBox2">Enter Your Key:</label>
@@ -147,6 +160,7 @@
 
     <!-- Username Dialog -->
     <div class="dialog-box" id="usernameDialog">
+        <label for="usernameBox">Username:</label>
         <div id="usernameBox" class="hidden">Username will appear here</div>
         <button id="loginButton" class="login-button">Login</button>
     </div>
