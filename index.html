@@ -9,9 +9,20 @@
             font-family: Arial, sans-serif;
             margin: 20px;
         }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .table-container {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
         table {
             border-collapse: collapse;
-            margin-bottom: 20px;
             width: 100%;
         }
         td {
@@ -23,6 +34,9 @@
             border: none;
             width: calc(100% - 20px);
             outline: none;
+        }
+        td:hover {
+            background-color: #f0f0f0;
         }
         .arrow {
             position: absolute;
@@ -37,27 +51,37 @@
         .options button {
             margin-right: 5px;
         }
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
     </style>
 </head>
 <body>
 
 <h1>Interactive Table</h1>
 
-<table id="primaryTable">
-    <tr>
-        <td>
-            <input type="text" maxlength="64" placeholder="Editable (max 64 chars)" />
-            <span class="arrow">➡</span>
-        </td>
-    </tr>
-</table>
-
-<div class="options">
-    <button onclick="addCell('primary')">Add</button>
-    <button onclick="deleteCell('primary')">Delete</button>
-    <button onclick="copyCell('primary')">Copy</button>
-    <button onclick="saveTable('primary')">Save</button>
-    <button onclick="modifyCell('primary')">Modify</button>
+<div class="grid-container">
+    <div class="table-container fade-in">
+        <table id="primaryTable">
+            <tr>
+                <td>
+                    <input type="text" maxlength="64" placeholder="Editable (max 64 chars)" />
+                    <span class="arrow">➡</span>
+                </td>
+            </tr>
+        </table>
+        <div class="options">
+            <button onclick="addCell('primary')">Add</button>
+            <button onclick="deleteCell('primary')">Delete</button>
+            <button onclick="copyCell('primary')">Copy</button>
+            <button onclick="saveTable('primary')">Save</button>
+            <button onclick="modifyCell('primary')">Modify</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -65,6 +89,7 @@
         const table = document.getElementById(`${tableType}Table`);
         const row = table.insertRow();
         const cell = row.insertCell();
+        cell.className = "fade-in";
         cell.innerHTML = `
             <input type="text" maxlength="${tableType === 'primary' ? '64' : '144'}" placeholder="Editable (max ${tableType === 'primary' ? '64' : '144'} chars)" />
             <span class="arrow">➡</span>
