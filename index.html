@@ -33,7 +33,7 @@
         }
 
         .dialog-box input {
-            width: 100%;
+            width: 90%; /* Reduced width for neatness */
             padding: 10px;
             margin-bottom: 20px;
             border: 1px solid #ccc;
@@ -83,12 +83,18 @@
         }
 
         #outputBox1, #outputBox2 {
+            width: 90%; /* Ensure output fits neatly within the box */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: auto;
             background-color: #f9f9f9;
             text-align: center;
             font-size: 14px;
             color: #aaa;
             user-select: none;
             filter: blur(6px);
+            overflow: hidden;
         }
 
         #usernameBox {
