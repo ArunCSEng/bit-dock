@@ -8,11 +8,12 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
         }
         .spreadsheet {
+            width: 45%;
             border: 1px solid #ddd;
             border-radius: 5px;
             padding: 10px;
@@ -68,10 +69,13 @@
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 1</div>
     <table id="spreadsheet1">
-        <!-- Generate a 5x1 table dynamically -->
         <script>
             for (let i = 0; i < 5; i++) {
-                document.write('<tr><td><input type="text" maxlength="64" placeholder="Cell"></td></tr>');
+                document.write('<tr>');
+                for (let j = 0; j < 2; j++) {
+                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
+                }
+                document.write('</tr>');
             }
         </script>
     </table>
@@ -85,10 +89,13 @@
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 2</div>
     <table id="spreadsheet2">
-        <!-- Generate a 5x1 table dynamically -->
         <script>
             for (let i = 0; i < 5; i++) {
-                document.write('<tr><td><input type="text" maxlength="64" placeholder="Cell"></td></tr>');
+                document.write('<tr>');
+                for (let j = 0; j < 2; j++) {
+                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
+                }
+                document.write('</tr>');
             }
         </script>
     </table>
@@ -102,10 +109,13 @@
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 3</div>
     <table id="spreadsheet3">
-        <!-- Generate a 5x1 table dynamically -->
         <script>
             for (let i = 0; i < 5; i++) {
-                document.write('<tr><td><input type="text" maxlength="64" placeholder="Cell"></td></tr>');
+                document.write('<tr>');
+                for (let j = 0; j < 2; j++) {
+                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
+                }
+                document.write('</tr>');
             }
         </script>
     </table>
@@ -119,10 +129,13 @@
 <div class="spreadsheet">
     <div class="spreadsheet-title">Dock 4</div>
     <table id="spreadsheet4">
-        <!-- Generate a 5x1 table dynamically -->
         <script>
             for (let i = 0; i < 5; i++) {
-                document.write('<tr><td><input type="text" maxlength="64" placeholder="Cell"></td></tr>');
+                document.write('<tr>');
+                for (let j = 0; j < 2; j++) {
+                    document.write('<td><input type="text" maxlength="64" placeholder="Cell"></td>');
+                }
+                document.write('</tr>');
             }
         </script>
     </table>
@@ -137,8 +150,10 @@
     function addCell(tableId) {
         const table = document.getElementById(tableId);
         const row = table.insertRow();
-        const cell = row.insertCell();
-        cell.innerHTML = '<input type="text" maxlength="64" placeholder="Cell">';
+        for (let i = 0; i < 2; i++) {
+            const cell = row.insertCell();
+            cell.innerHTML = '<input type="text" maxlength="64" placeholder="Cell">';
+        }
     }
 
     function deleteCell(tableId) {
