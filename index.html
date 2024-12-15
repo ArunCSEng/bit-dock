@@ -149,17 +149,19 @@
 <script>
     function addCell(tableId) {
         const table = document.getElementById(tableId);
-        const row = table.insertRow();
+        const row = document.createElement('tr');
         for (let i = 0; i < 2; i++) {
-            const cell = row.insertCell();
+            const cell = document.createElement('td');
             cell.innerHTML = '<input type="text" maxlength="64" placeholder="Cell">';
+            row.appendChild(cell);
         }
+        table.appendChild(row);
     }
 
     function deleteCell(tableId) {
         const table = document.getElementById(tableId);
         if (table.rows.length > 0) {
-            table.deleteRow(table.rows.length - 1);
+            table.deleteRow(-1);
         } else {
             alert('No rows to delete!');
         }
