@@ -3,160 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Table</title>
+    <title>Dialog Boxes</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-        }
-        .table-container {
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 15px;
-            background-color: #f9f9f9;
-        }
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            position: relative;
-        }
-        td input {
-            border: none;
-            width: calc(100% - 20px);
-            outline: none;
-        }
-        td:hover {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             background-color: #f0f0f0;
+            height: 100vh;
+            flex-wrap: wrap;
         }
-        .arrow {
+
+        .dialog-box {
             position: absolute;
-            right: 5px;
-            top: 5px;
-            cursor: pointer;
+            width: 500px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .dialog-box label {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .dialog-box input {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .dialog-box button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
             font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
         }
-        .options {
-            margin-top: 10px;
+
+        .dialog-box button:hover {
+            background-color: #0056b3;
         }
-        .options button {
-            margin-right: 5px;
+
+        .dialog-box#keyDialog {
+            top: 20px;
+            left: 20px;
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease;
+
+        .dialog-box#verificationDialog {
+            top: 20px;
+            right: 20px;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+
+        .dialog-box#secondKeyDialog {
+            top: 240px;
+            left: 20px;
+        }
+
+        .dialog-box#secondVerificationDialog {
+            top: 240px;
+            right: 20px;
+        }
+
+        .dialog-box#usernameDialog {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .or-text {
+            position: absolute;
+            top: 210px;
+            left: 25ch;
+            font-size: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        #outputBox1, #outputBox2 {
+            width: 90%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin: auto;
+            background-color: #f9f9f9;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+            user-select: none;
+            filter: blur(6px);
+            overflow: hidden;
+        }
+
+        #usernameBox {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .hidden {
+            filter: blur(6px);
+        }
+
+        .login-button {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
         }
     </style>
 </head>
 <body>
 
-<h1>Interactive Table</h1>
-
-<div class="grid-container">
-    <div class="table-container fade-in">
-        <table id="primaryTable">
-            <tr>
-                <td>
-                    <input type="text" maxlength="64" placeholder="Editable (max 64 chars)" />
-                    <span class="arrow">➡</span>
-                </td>
-            </tr>
-        </table>
-        <div class="options">
-            <button onclick="addCell('primary')">Add</button>
-            <button onclick="deleteCell('primary')">Delete</button>
-            <button onclick="copyCell('primary')">Copy</button>
-            <button onclick="saveTable('primary')">Save</button>
-            <button onclick="modifyCell('primary')">Modify</button>
-        </div>
+    <!-- First Key Dialog -->
+    <div class="dialog-box" id="keyDialog">
+        <label for="inputBox1">Enter Your Key:</label>
+        <input type="text" id="inputBox1" placeholder="Minimum 8 characters">
+        <button id="generateButton">Generate</button>
     </div>
-</div>
 
-<script>
-    function addCell(tableType) {
-        const table = document.getElementById(`${tableType}Table`);
-        const row = table.insertRow();
-        const cell = row.insertCell();
-        cell.className = "fade-in";
-        cell.innerHTML = `
-            <input type="text" maxlength="${tableType === 'primary' ? '64' : '144'}" placeholder="Editable (max ${tableType === 'primary' ? '64' : '144'} chars)" />
-            <span class="arrow">➡</span>
-        `;
+    <!-- First Verification Dialog -->
+    <div class="dialog-box" id="verificationDialog">
+        <label for="outputBox1">Verification:</label>
+        <div id="outputBox1">Blurred output will appear here</div>
+        <button id="verifyButton">Verify</button>
+    </div>
 
-        // Add event listener for the arrow
-        const arrow = cell.querySelector('.arrow');
-        arrow.addEventListener('click', () => createSecondaryTable(cell));
-    }
+    <!-- OR Text -->
+    <div class="or-text">OR</div>
 
-    function deleteCell(tableType) {
-        const table = document.getElementById(`${tableType}Table`);
-        if (table.rows.length > 0) {
-            table.deleteRow(table.rows.length - 1);
-        } else {
-            alert('No cells to delete!');
+    <!-- Second Key Dialog -->
+    <div class="dialog-box" id="secondKeyDialog">
+        <label for="inputBox2">Enter Your Key:</label>
+        <input type="text" id="inputBox2" placeholder="Minimum 8 characters">
+        <button id="generateButton2">Generate</button>
+    </div>
+
+    <!-- Second Verification Dialog -->
+    <div class="dialog-box" id="secondVerificationDialog">
+        <label for="outputBox2">Verification:</label>
+        <div id="outputBox2">Blurred output will appear here</div>
+        <button id="verifyButton2">Verify</button>
+    </div>
+
+    <!-- Username Dialog -->
+    <div class="dialog-box" id="usernameDialog">
+        <label for="usernameBox">Username:</label>
+        <div id="usernameBox" class="hidden">Username will appear here</div>
+        <button id="loginButton" class="login-button">Login</button>
+    </div>
+
+    <script>
+        const inputBox1 = document.getElementById('inputBox1');
+        const outputBox1 = document.getElementById('outputBox1');
+        const generateButton = document.getElementById('generateButton');
+        const verifyButton = document.getElementById('verifyButton');
+
+        const inputBox2 = document.getElementById('inputBox2');
+        const outputBox2 = document.getElementById('outputBox2');
+        const generateButton2 = document.getElementById('generateButton2');
+        const verifyButton2 = document.getElementById('verifyButton2');
+
+        const usernameBox = document.getElementById('usernameBox');
+        const loginButton = document.getElementById('loginButton');
+
+        function disableSecondSet(disabled) {
+            inputBox2.disabled = disabled;
+            generateButton2.disabled = disabled;
+            verifyButton2.disabled = disabled;
         }
-    }
 
-    function copyCell(tableType) {
-        const table = document.getElementById(`${tableType}Table`);
-        const lastRow = table.rows[table.rows.length - 1];
-        if (lastRow) {
-            const newRow = table.insertRow();
-            newRow.innerHTML = lastRow.innerHTML;
-        } else {
-            alert('No cells to copy!');
+        function disableFirstSet(disabled) {
+            inputBox1.disabled = disabled;
+            generateButton.disabled = disabled;
+            verifyButton.disabled = disabled;
         }
-    }
 
-    function saveTable(tableType) {
-        const table = document.getElementById(`${tableType}Table`);
-        const data = Array.from(table.rows).map(row => {
-            return Array.from(row.cells).map(cell => cell.querySelector('input').value);
+        inputBox1.addEventListener('input', () => {
+    if (inputBox1.value.length > 0) {
+        disableSecondSet(true);
+    } else {
+        disableSecondSet(false);
+    }
+});
+
+        inputBox2.addEventListener('input', () => {
+    if (inputBox2.value.length > 0) {
+        disableFirstSet(true);
+    } else {
+        disableFirstSet(false);
+    }
+});
+
+        async function generateHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function generateStrongerHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-512', data);
+            return Array.from(new Uint8Array(hashBuffer)).map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        generateButton.addEventListener('click', async () => {
+            const inputValue = inputBox1.value;
+            if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
+                alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
+                return;
+            }
+            const hash = await generateHash(inputValue);
+            outputBox1.textContent = hash;
+            outputBox1.style.filter = 'blur(6px)';
         });
-        console.log(`${tableType} Table Data:`, data);
-        alert('Table saved! Check console for data.');
-    }
 
-    function modifyCell(tableType) {
-        alert('Modify functionality can be customized further!');
-    }
+        verifyButton.addEventListener('click', () => {
+            const hash = outputBox1.textContent;
+            if (hash && hash.length === 64) {
+                usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
+                usernameBox.classList.remove('hidden');
+                loginButton.style.display = 'block';
+            } else {
+                alert('Please generate a valid hash first.');
+            }
+        });
 
-    function createSecondaryTable(cell) {
-        const secondaryTable = document.createElement('table');
-        secondaryTable.id = 'secondaryTable';
-        const row = secondaryTable.insertRow();
-        const newCell = row.insertCell();
-        newCell.innerHTML = `
-            <input type="text" maxlength="144" placeholder="Editable (max 144 chars)" />
-        `;
-        
-        const options = document.createElement('div');
-        options.className = 'options';
-        options.innerHTML = `
-            <button onclick="addCell('secondary')">Add</button>
-            <button onclick="deleteCell('secondary')">Delete</button>
-            <button onclick="copyCell('secondary')">Copy</button>
-            <button onclick="saveTable('secondary')">Save</button>
-            <button onclick="modifyCell('secondary')">Modify</button>
-        `;
+        generateButton2.addEventListener('click', async () => {
+            const inputValue = inputBox2.value;
+            if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
+                alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
+                return;
+            }
+            const hash = await generateStrongerHash(inputValue);
+            outputBox2.textContent = hash;
+            outputBox2.style.filter = 'blur(6px)';
+        });
 
-        cell.appendChild(secondaryTable);
-        cell.appendChild(options);
-        cell.querySelector('.arrow').remove(); // Remove the arrow after creating secondary table
-    }
-</script>
-
+        verifyButton2.addEventListener('click', () => {
+            const hash = outputBox2.textContent;
+            if (hash && hash.length === 128) {
+                usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
+                usernameBox.classList.remove('hidden');
+                loginButton.style.display = 'block';
+            } else {
+                alert('Please generate a valid hash first.');
+            }
+        });
+    </script>
 </body>
 </html>
