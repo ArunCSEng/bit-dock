@@ -44,12 +44,30 @@
             text-align: center;
             margin-bottom: 10px;
         }
+        .options {
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        .options button {
+            padding: 5px 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007BFF;
+            color: white;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
 
 <div class="spreadsheet">
-    <div class="spreadsheet-title">Spreadsheet 1</div>
+    <div class="spreadsheet-title">Dock 1</div>
     <table id="spreadsheet1">
         <!-- Generate a 10x2 table dynamically -->
         <script>
@@ -62,10 +80,17 @@
             }
         </script>
     </table>
+    <div class="options">
+        <button onclick="addCell('spreadsheet1')">Add</button>
+        <button onclick="deleteCell('spreadsheet1')">Delete</button>
+        <button onclick="copyCell('spreadsheet1')">Copy</button>
+        <button onclick="modifyCell('spreadsheet1')">Modify</button>
+        <button onclick="saveTable('spreadsheet1')">Save</button>
+    </div>
 </div>
 
 <div class="spreadsheet">
-    <div class="spreadsheet-title">Spreadsheet 2</div>
+    <div class="spreadsheet-title">Dock 2</div>
     <table id="spreadsheet2">
         <!-- Generate a 10x2 table dynamically -->
         <script>
@@ -78,7 +103,61 @@
             }
         </script>
     </table>
+    <div class="options">
+        <button onclick="addCell('spreadsheet2')">Add</button>
+        <button onclick="deleteCell('spreadsheet2')">Delete</button>
+        <button onclick="copyCell('spreadsheet2')">Copy</button>
+        <button onclick="modifyCell('spreadsheet2')">Modify</button>
+        <button onclick="saveTable('spreadsheet2')">Save</button>
+    </div>
 </div>
+
+<script>
+    function addCell(tableId) {
+        const table = document.getElementById(tableId);
+        const row = table.insertRow();
+        for (let i = 0; i < 2; i++) {
+            const cell = row.insertCell();
+            cell.innerHTML = '<input type="text" maxlength="64" placeholder="Cell">';
+        }
+    }
+
+    function deleteCell(tableId) {
+        const table = document.getElementById(tableId);
+        if (table.rows.length > 0) {
+            table.deleteRow(table.rows.length - 1);
+        } else {
+            alert('No rows to delete!');
+        }
+    }
+
+    function copyCell(tableId) {
+        const table = document.getElementById(tableId);
+        if (table.rows.length > 0) {
+            const lastRow = table.rows[table.rows.length - 1];
+            const newRow = table.insertRow();
+            for (let i = 0; i < lastRow.cells.length; i++) {
+                const cell = newRow.insertCell();
+                cell.innerHTML = lastRow.cells[i].innerHTML;
+            }
+        } else {
+            alert('No rows to copy!');
+        }
+    }
+
+    function modifyCell(tableId) {
+        alert('Modify functionality can be customized further based on requirements!');
+    }
+
+    function saveTable(tableId) {
+        const table = document.getElementById(tableId);
+        const data = Array.from(table.rows).map(row => {
+            return Array.from(row.cells).map(cell => cell.querySelector('input').value);
+        });
+        console.log(`${tableId} Data:`, data);
+        alert(`${tableId} saved! Check console for data.`);
+    }
+</script>
 
 </body>
 </html>
