@@ -19,7 +19,7 @@
 
         .dialog-box {
             position: absolute;
-            width: 500px; /* Further adjusted width to comfortably accommodate 64 characters */
+            width: 500px;
             background: #fff;
             padding: 20px;
             border-radius: 8px;
@@ -66,13 +66,23 @@
             right: 20px;
         }
 
+        .dialog-box#secondKeyDialog {
+            top: 240px;
+            left: 20px;
+        }
+
+        .dialog-box#secondVerificationDialog {
+            top: 240px;
+            right: 20px;
+        }
+
         .dialog-box#usernameDialog {
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
         }
 
-        #outputBox1 {
+        #outputBox1, #outputBox2 {
             background-color: #f9f9f9;
             text-align: center;
             font-size: 14px;
@@ -101,18 +111,32 @@
 </head>
 <body>
 
-    <!-- Key Dialog -->
+    <!-- First Key Dialog -->
     <div class="dialog-box" id="keyDialog">
         <label for="inputBox1">Enter Your Key:</label>
         <input type="text" id="inputBox1" placeholder="Minimum 8 characters">
         <button id="generateButton">Generate</button>
     </div>
 
-    <!-- Verification Dialog -->
+    <!-- First Verification Dialog -->
     <div class="dialog-box" id="verificationDialog">
         <label for="outputBox1">Verification:</label>
         <div id="outputBox1">Blurred output will appear here</div>
         <button id="verifyButton">Verify</button>
+    </div>
+
+    <!-- Second Key Dialog -->
+    <div class="dialog-box" id="secondKeyDialog">
+        <label for="inputBox2">Enter Your Key:</label>
+        <input type="text" id="inputBox2" placeholder="Minimum 8 characters">
+        <button id="generateButton2">Generate</button>
+    </div>
+
+    <!-- Second Verification Dialog -->
+    <div class="dialog-box" id="secondVerificationDialog">
+        <label for="outputBox2">Verification:</label>
+        <div id="outputBox2">Blurred output will appear here</div>
+        <button id="verifyButton2">Verify</button>
     </div>
 
     <!-- Username Dialog -->
@@ -126,6 +150,12 @@
         const outputBox1 = document.getElementById('outputBox1');
         const generateButton = document.getElementById('generateButton');
         const verifyButton = document.getElementById('verifyButton');
+
+        const inputBox2 = document.getElementById('inputBox2');
+        const outputBox2 = document.getElementById('outputBox2');
+        const generateButton2 = document.getElementById('generateButton2');
+        const verifyButton2 = document.getElementById('verifyButton2');
+
         const usernameBox = document.getElementById('usernameBox');
         const loginButton = document.getElementById('loginButton');
 
@@ -134,6 +164,15 @@
             const encoder = new TextEncoder();
             const data = encoder.encode(input);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        // Stronger cryptography method for second set
+        async function generateStrongerHash(input) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-512', data);
             const hashArray = Array.from(new Uint8Array(hashBuffer));
             return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
         }
@@ -154,6 +193,30 @@
         verifyButton.addEventListener('click', () => {
             const hash = outputBox1.textContent;
             if (hash && hash.length === 64) {
+                usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
+                usernameBox.classList.remove('hidden');
+                loginButton.style.display = 'block';
+            } else {
+                alert('Please generate a valid hash first.');
+            }
+        });
+
+        generateButton2.addEventListener('click', async () => {
+            const inputValue = inputBox2.value;
+
+            if (!/[a-zA-Z]/.test(inputValue) || !/\d/.test(inputValue) || !/[!@#$%^&*(),.?":{}|<>]/.test(inputValue) || inputValue.length < 8) {
+                alert('Key must contain at least 8 characters, including uppercase, lowercase, numbers, and special characters.');
+                return;
+            }
+
+            const hash = await generateStrongerHash(inputValue);
+            outputBox2.textContent = hash;
+            outputBox2.style.filter = 'blur(6px)';
+        });
+
+        verifyButton2.addEventListener('click', () => {
+            const hash = outputBox2.textContent;
+            if (hash && hash.length === 128) { // SHA-512 produces a 128-character hash
                 usernameBox.textContent = hash.slice(0, 6) + '*'.repeat(58);
                 usernameBox.classList.remove('hidden');
                 loginButton.style.display = 'block';
