@@ -123,7 +123,7 @@
             color: white;
         }
 
-        .disabled {
+        . {
             pointer-events: none;
             opacity: 0.5;
         }
@@ -151,15 +151,15 @@
     <!-- Second Key Dialog -->
     <div class="dialog-box" id="secondKeyDialog">
         <label for="inputBox2">Enter Your Key:</label>
-        <input type="text" id="inputBox2" placeholder="Minimum 8 characters" disabled>
-        <button id="generateButton2" disabled>Generate</button>
+        <input type="text" id="inputBox2" placeholder="Minimum 8 characters" >
+        <button id="generateButton2" >Generate</button>
     </div>
 
     <!-- Second Verification Dialog -->
     <div class="dialog-box" id="secondVerificationDialog">
         <label for="outputBox2">Verification:</label>
         <div id="outputBox2">Blurred output will appear here</div>
-        <button id="verifyButton2" disabled>Verify</button>
+        <button id="verifyButton2" >Verify</button>
     </div>
 
     <!-- Username Dialog -->
@@ -184,26 +184,26 @@
         const loginButton = document.getElementById('loginButton');
 
         // Disable the second set by default
-        function disableSecondSet(disabled) {
-            inputBox2.disabled = disabled;
-            generateButton2.disabled = disabled;
-            verifyButton2.disabled = disabled;
+        function disableSecondSet() {
+            inputBox2. = ;
+            generateButton2. = ;
+            verifyButton2. = ;
         }
 
         // Disable the first set when second set is active
-        function disableFirstSet(disabled) {
-            inputBox1.disabled = disabled;
-            generateButton.disabled = disabled;
-            verifyButton.disabled = disabled;
+        function disableFirstSet() {
+            inputBox1. = ;
+            generateButton. = ;
+            verifyButton. = ;
         }
 
-        inputBox1.addEventListener('focus', () => {
-            disableSecondSet(true);
-        });
+        inputBox1.addEventListener('input', () => {
+    disableSecondSet(true);
+});
 
-        inputBox2.addEventListener('focus', () => {
-            disableFirstSet(true);
-        });
+        inputBox2.addEventListener('input', () => {
+    disableFirstSet(true);
+});
 
         generateButton.addEventListener('click', async () => {
             const inputValue = inputBox1.value;
