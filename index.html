@@ -191,12 +191,20 @@
         }
 
         inputBox1.addEventListener('input', () => {
-            disableSecondSet(true);
-        });
+    if (inputBox1.value.length > 0) {
+        disableSecondSet(true);
+    } else {
+        disableSecondSet(false);
+    }
+});
 
         inputBox2.addEventListener('input', () => {
-            disableFirstSet(true);
-        });
+    if (inputBox2.value.length > 0) {
+        disableFirstSet(true);
+    } else {
+        disableFirstSet(false);
+    }
+});
 
         async function generateHash(input) {
             const encoder = new TextEncoder();
