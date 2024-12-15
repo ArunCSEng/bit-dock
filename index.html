@@ -85,8 +85,7 @@
         .or-text {
             position: absolute;
             top: 180px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 50px; /* Position adjusted to align with left side */
             font-size: 20px;
             font-weight: bold;
             color: #555;
@@ -123,6 +122,11 @@
             background-color: #28a745;
             color: white;
         }
+
+        .disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -147,15 +151,15 @@
     <!-- Second Key Dialog -->
     <div class="dialog-box" id="secondKeyDialog">
         <label for="inputBox2">Enter Your Key:</label>
-        <input type="text" id="inputBox2" placeholder="Minimum 8 characters">
-        <button id="generateButton2">Generate</button>
+        <input type="text" id="inputBox2" placeholder="Minimum 8 characters" disabled>
+        <button id="generateButton2" disabled>Generate</button>
     </div>
 
     <!-- Second Verification Dialog -->
     <div class="dialog-box" id="secondVerificationDialog">
         <label for="outputBox2">Verification:</label>
         <div id="outputBox2">Blurred output will appear here</div>
-        <button id="verifyButton2">Verify</button>
+        <button id="verifyButton2" disabled>Verify</button>
     </div>
 
     <!-- Username Dialog -->
@@ -179,23 +183,27 @@
         const usernameBox = document.getElementById('usernameBox');
         const loginButton = document.getElementById('loginButton');
 
-        // Function to generate SHA-256 hash
-        async function generateHash(input) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        // Disable the second set by default
+        function disableSecondSet(disabled) {
+            inputBox2.disabled = disabled;
+            generateButton2.disabled = disabled;
+            verifyButton2.disabled = disabled;
         }
 
-        // Stronger cryptography method for second set
-        async function generateStrongerHash(input) {
-            const encoder = new TextEncoder();
-            const data = encoder.encode(input);
-            const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
+        // Disable the first set when second set is active
+        function disableFirstSet(disabled) {
+            inputBox1.disabled = disabled;
+            generateButton.disabled = disabled;
+            verifyButton.disabled = disabled;
         }
+
+        inputBox1.addEventListener('focus', () => {
+            disableSecondSet(true);
+        });
+
+        inputBox2.addEventListener('focus', () => {
+            disableFirstSet(true);
+        });
 
         generateButton.addEventListener('click', async () => {
             const inputValue = inputBox1.value;
