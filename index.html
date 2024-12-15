@@ -83,8 +83,6 @@
     <div class="options">
         <button onclick="addCell('spreadsheet1')">Add</button>
         <button onclick="deleteCell('spreadsheet1')">Delete</button>
-        <button onclick="copyCell('spreadsheet1')">Copy</button>
-        <button onclick="modifyCell('spreadsheet1')">Modify</button>
         <button onclick="saveTable('spreadsheet1')">Save</button>
     </div>
 </div>
@@ -106,8 +104,6 @@
     <div class="options">
         <button onclick="addCell('spreadsheet2')">Add</button>
         <button onclick="deleteCell('spreadsheet2')">Delete</button>
-        <button onclick="copyCell('spreadsheet2')">Copy</button>
-        <button onclick="modifyCell('spreadsheet2')">Modify</button>
         <button onclick="saveTable('spreadsheet2')">Save</button>
     </div>
 </div>
@@ -129,24 +125,6 @@
         } else {
             alert('No rows to delete!');
         }
-    }
-
-    function copyCell(tableId) {
-        const table = document.getElementById(tableId);
-        if (table.rows.length > 0) {
-            const lastRow = table.rows[table.rows.length - 1];
-            const newRow = table.insertRow();
-            for (let i = 0; i < lastRow.cells.length; i++) {
-                const cell = newRow.insertCell();
-                cell.innerHTML = lastRow.cells[i].innerHTML;
-            }
-        } else {
-            alert('No rows to copy!');
-        }
-    }
-
-    function modifyCell(tableId) {
-        alert('Modify functionality can be customized further based on requirements!');
     }
 
     function saveTable(tableId) {
