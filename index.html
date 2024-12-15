@@ -126,6 +126,7 @@
 
     function addRow(tableId) {
         const table = document.getElementById(tableId);
+        if (!table) return;
         const row = document.createElement('tr');
         for (let i = 0; i < 2; i++) {
             const cell = document.createElement('td');
@@ -141,15 +142,16 @@
 
     function deleteRow(tableId) {
         const table = document.getElementById(tableId);
-        if (table.rows.length > 0) {
-            table.deleteRow(-1);
-        } else {
+        if (!table || table.rows.length === 0) {
             alert('No rows to delete!');
+            return;
         }
+        table.deleteRow(-1);
     }
 
     function saveTable(tableId) {
         const table = document.getElementById(tableId);
+        if (!table) return;
         const data = Array.from(table.rows).map(row => {
             return Array.from(row.cells).map(cell => cell.querySelector('input').value);
         });
@@ -157,10 +159,8 @@
         alert(`${tableId} saved! Check console for data.`);
     }
 
-    initializeTable('spreadsheet1');
-    initializeTable('spreadsheet2');
-    initializeTable('spreadsheet3');
-    initializeTable('spreadsheet4');
+    // Initialize all tables independently
+    ['spreadsheet1', 'spreadsheet2', 'spreadsheet3', 'spreadsheet4'].forEach(initializeTable);
 </script>
 
 </body>
