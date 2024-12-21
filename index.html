@@ -3,165 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Independent Docks</title>
+    <title>Dynamic Spreadsheet</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .spreadsheet {
-            width: 45%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
         table {
             border-collapse: collapse;
             width: 100%;
+            margin: 20px 0;
         }
-        td {
-            border: 1px solid #ddd;
+
+        th, td {
+            border: 1px solid #ccc;
             padding: 10px;
-            text-align: center;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        td.message {
             position: relative;
         }
-        td input {
-            width: 100%;
-            border: none;
-            outline: none;
-            text-align: center;
-        }
-        td:hover {
-            background-color: #f0f0f0;
-        }
-        .spreadsheet-title {
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 10px;
-        }
-        .options {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .options button {
-            padding: 5px 10px;
-            font-size: 14px;
-            border: none;
-            border-radius: 4px;
-            background-color: #007BFF;
-            color: white;
+
+        td.message .copy-icon {
+            position: absolute;
+            right: 10px;
             cursor: pointer;
         }
-        .options button:hover {
-            background-color: #0056b3;
+
+        .blurred {
+            filter: blur(5px);
         }
     </style>
 </head>
 <body>
+    <h1>Dynamic Spreadsheet</h1>
+    <button id="addButton">Add</button>
+    <button id="deleteButton">Delete</button>
+    <button id="saveButton">Save</button>
+    <button id="modifyButton">Modify</button>
+    <button id="lockButton">Lock</button>
+    <table id="spreadsheet">
+        <thead>
+            <tr>
+                <th>Title (max 64 chars)</th>
+                <th>Message (max 144 chars)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td contenteditable="true" maxlength="64"></td>
+                <td class="message" contenteditable="true" maxlength="144">
+                    <span></span>
+                    <span class="copy-icon" onclick="copyMessage(this)">&#x2398;</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
-<div class="spreadsheet">
-    <div class="spreadsheet-title">Dock 1</div>
-    <table id="spreadsheet1"></table>
-    <div class="options">
-        <button onclick="addRow('spreadsheet1')">Add</button>
-        <button onclick="deleteRow('spreadsheet1')">Delete</button>
-        <button onclick="saveTable('spreadsheet1')">Save</button>
-    </div>
-</div>
+    <script>
+        let isLocked = false;
 
-<div class="spreadsheet">
-    <div class="spreadsheet-title">Dock 2</div>
-    <table id="spreadsheet2"></table>
-    <div class="options">
-        <button onclick="addRow('spreadsheet2')">Add</button>
-        <button onclick="deleteRow('spreadsheet2')">Delete</button>
-        <button onclick="saveTable('spreadsheet2')">Save</button>
-    </div>
-</div>
-
-<div class="spreadsheet">
-    <div class="spreadsheet-title">Dock 3</div>
-    <table id="spreadsheet3"></table>
-    <div class="options">
-        <button onclick="addRow('spreadsheet3')">Add</button>
-        <button onclick="deleteRow('spreadsheet3')">Delete</button>
-        <button onclick="saveTable('spreadsheet3')">Save</button>
-    </div>
-</div>
-
-<div class="spreadsheet">
-    <div class="spreadsheet-title">Dock 4</div>
-    <table id="spreadsheet4"></table>
-    <div class="options">
-        <button onclick="addRow('spreadsheet4')">Add</button>
-        <button onclick="deleteRow('spreadsheet4')">Delete</button>
-        <button onclick="saveTable('spreadsheet4')">Save</button>
-    </div>
-</div>
-
-<script>
-    function initializeTable(tableId) {
-        const table = document.getElementById(tableId);
-        for (let i = 0; i < 5; i++) {
+        document.getElementById('addButton').addEventListener('click', () => {
+            const table = document.getElementById('spreadsheet').querySelector('tbody');
             const row = document.createElement('tr');
-            for (let j = 0; j < 2; j++) {
-                const cell = document.createElement('td');
-                const input = document.createElement('input');
-                input.type = 'text';
-                input.maxLength = 64;
-                input.placeholder = 'Cell';
-                cell.appendChild(input);
-                row.appendChild(cell);
-            }
+            row.innerHTML = `
+                <td contenteditable="true" maxlength="64"></td>
+                <td class="message" contenteditable="true" maxlength="144">
+                    <span></span>
+                    <span class="copy-icon" onclick="copyMessage(this)">&#x2398;</span>
+                </td>
+            `;
             table.appendChild(row);
-        }
-    }
-
-    function addRow(tableId) {
-        const table = document.getElementById(tableId);
-        if (!table) return;
-        const row = document.createElement('tr');
-        for (let i = 0; i < 2; i++) {
-            const cell = document.createElement('td');
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.maxLength = 64;
-            input.placeholder = 'Cell';
-            cell.appendChild(input);
-            row.appendChild(cell);
-        }
-        table.appendChild(row);
-    }
-
-    function deleteRow(tableId) {
-        const table = document.getElementById(tableId);
-        if (!table || table.rows.length === 0) {
-            alert('No rows to delete!');
-            return;
-        }
-        table.deleteRow(-1);
-    }
-
-    function saveTable(tableId) {
-        const table = document.getElementById(tableId);
-        if (!table) return;
-        const data = Array.from(table.rows).map(row => {
-            return Array.from(row.cells).map(cell => cell.querySelector('input').value);
         });
-        console.log(`${tableId} Data:`, data);
-        alert(`${tableId} saved! Check console for data.`);
-    }
 
-    // Initialize all tables independently
-    ['spreadsheet1', 'spreadsheet2', 'spreadsheet3', 'spreadsheet4'].forEach(initializeTable);
-</script>
+        document.getElementById('deleteButton').addEventListener('click', () => {
+            const table = document.getElementById('spreadsheet').querySelector('tbody');
+            if (table.rows.length > 0) {
+                table.deleteRow(table.rows.length - 1);
+            }
+        });
 
+        document.getElementById('modifyButton').addEventListener('click', () => {
+            const selectedCell = document.activeElement;
+            if (selectedCell.tagName === 'TD' && selectedCell.isContentEditable) {
+                selectedCell.focus();
+            }
+        });
+
+        document.getElementById('saveButton').addEventListener('click', () => {
+            const table = document.getElementById('spreadsheet');
+            const data = [];
+
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const title = row.cells[0].innerText.trim();
+                const message = row.cells[1].innerText.trim();
+                data.push({ title, message });
+            });
+
+            console.log('Saved Data:', data);
+            alert('Spreadsheet data saved to console.');
+        });
+
+        document.getElementById('lockButton').addEventListener('click', () => {
+            const messages = document.querySelectorAll('#spreadsheet .message span:first-child');
+            isLocked = !isLocked;
+
+            messages.forEach(span => {
+                if (isLocked) {
+                    span.classList.add('blurred');
+                } else {
+                    span.classList.remove('blurred');
+                }
+            });
+        });
+
+        function copyMessage(icon) {
+            const cell = icon.parentElement;
+            const message = cell.querySelector('span:first-child').innerText;
+            navigator.clipboard.writeText(message).then(() => {
+                alert('Message copied!');
+            });
+        }
+    </script>
 </body>
 </html>
