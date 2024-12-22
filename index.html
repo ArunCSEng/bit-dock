@@ -74,6 +74,12 @@
             direction: ltr;
         }
 
+        td.message .content {
+            display: inline-block;
+            width: calc(100% - 30px);
+            height: 100%;
+        }
+
         td.message .copy-icon {
             position: absolute;
             right: 10px;
@@ -82,7 +88,6 @@
             cursor: pointer;
             font-size: 18px;
             color: #888;
-            pointer-events: none;
         }
 
         td.message .copy-icon:hover {
@@ -118,8 +123,8 @@
         <tbody>
             <tr>
                 <td class="title" contenteditable="true" maxlength="64"></td>
-                <td class="message" contenteditable="true" maxlength="144">
-                    <span></span>
+                <td class="message">
+                    <span class="content" contenteditable="true" maxlength="144"></span>
                     <span class="copy-icon" onclick="copyMessage(this)">📋</span>
                 </td>
             </tr>
@@ -134,8 +139,8 @@
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td class="title" contenteditable="true" maxlength="64"></td>
-                <td class="message" contenteditable="true" maxlength="144">
-                    <span></span>
+                <td class="message">
+                    <span class="content" contenteditable="true" maxlength="144"></span>
                     <span class="copy-icon" onclick="copyMessage(this)">📋</span>
                 </td>
             `;
@@ -151,7 +156,7 @@
 
         document.getElementById('modifyButton').addEventListener('click', () => {
             const selectedCell = document.activeElement;
-            if (selectedCell.tagName === 'TD' && selectedCell.isContentEditable) {
+            if (selectedCell.tagName === 'SPAN' && selectedCell.contentEditable === 'true') {
                 selectedCell.focus();
             }
         });
@@ -162,7 +167,7 @@
 
             table.querySelectorAll('tbody tr').forEach(row => {
                 const title = row.cells[0].innerText.trim();
-                const message = row.cells[1].innerText.trim();
+                const message = row.cells[1].querySelector('.content').innerText.trim();
                 data.push({ title, message });
             });
 
@@ -171,21 +176,23 @@
         });
 
         document.getElementById('lockButton').addEventListener('click', () => {
-            const messages = document.querySelectorAll('#spreadsheet .message span:first-child');
+            const messages = document.querySelectorAll('#spreadsheet .message .content');
             isLocked = !isLocked;
 
             messages.forEach(span => {
                 if (isLocked) {
                     span.classList.add('blurred');
+                    span.contentEditable = 'false';
                 } else {
                     span.classList.remove('blurred');
+                    span.contentEditable = 'true';
                 }
             });
         });
 
         function copyMessage(icon) {
             const cell = icon.parentElement;
-            const message = cell.querySelector('span:first-child').innerText;
+            const message = cell.querySelector('.content').innerText;
             navigator.clipboard.writeText(message).then(() => {
                 alert('Message copied!');
             });
